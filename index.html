@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Votación de Juegos - Tiempo Real</title>
+<script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=22RRoFgxv85ROm2V124z4CDdpE_wSmn0r9_olYJ62_kKtj239ZITXHGObfaFxmw9002osIq-VvppEmn0nYS2E_a9VWjkCrjaHVehmU2OCg02cYtwsJB22YLIA4h7czU1wLpVPA2zGK7Vpi4pXxgEqf4YnCHSBbM4Clgu2m14m57Etnl-tneg9mEOWWn17hugqqtVfsVOF1RqvJcfcEqPe2VT5ONkteN7HUqdCc5wbY9Pj4PXb-xQqMbfCgtZd7EavXBb_viOVPnCta_VyOo3rC2J_6C8tKvBmcxY-A7koqB5awLrjGuQ8StNST4lojmOmxketSIwLja6kQRILnvBsvJtuU4KcyhDdY5ow5OBwM0jB9tE1wxodh8A_g5occcMYSY4xsndoOM3aLSrAXtAu-36wAv5oQms1zlZHXLuLitPc2JQTPwzntEsUBBAc5pvSXezRw7P5t1WFcfGOSd--Wn0eNIhf7PYAzXp5oyy7SPtAuKsZ7SEfaX6O-ZhL3qvq9YA2LfHbfd1vHwF_tR-PHrue-dAz4R2g8pmLYE1RESSuYWq1Gu52tSDdGe9qyqs0QhBrTlS626jrID2QValvawV6VBk0cDwiBbdKydLG4Z-LZRrAwCvg5Klsu4MS9rNMhPhfcoF2e9lwWrKxh5OF9hC3czBRLCbWVwHREWGoxZ-u72I__7GiRMiG9_tZud_THAF310fGJZgh-FKdo-nP_zXF6CqCH1Kk64auTILpwZop9zx95kYQBjxDvi9t4fnooBx2u8sSfFQwq9I_LhGnqrMYERrGUYIeaRbw6QjL258AZOO_bwcDRiPIcywFicpnBYEnrkJ0Iz0PTd4Xfe8I-cMugCNJf11cWm7f-gfNXz3m0Dv8U4SZndYkK1wNwp2spHZ78pLYx0aDJ1NgcLWDmKKnNOyEwAep3Q0rIXlQGWBcjYYCvJ9g3Sgr6EZJWE6nZHEdqhW3iK8yi8vAQY1fuOuCl9_vn6dsfS89LmcJz-lPqsSBtv-rg_ufWHzFujAtFYLSgdZS91lPOTIELS82UsQNK2dy9y43Y32hHe7js4" charset="UTF-8"></script><style>
+  body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; }
+  #container { display: flex; height: 100vh; }
+  #sidebar {
+    width: 220px;
+    background: #222;
+    color: white;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  #sidebar h2 { margin-top: 0; font-size: 18px; }
+  #usersOnline { list-style: none; padding: 0; }
+  #usersOnline li { padding: 5px 0; border-bottom: 1px solid #444; }
+  #main {
+    flex: 1;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  #loginScreen {
+    max-width: 300px;
+    margin: 80px auto;
+    text-align: center;
+  }
+  #loginScreen input {
+    padding: 8px;
+    width: 80%;
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+  #loginScreen button {
+    padding: 8px 15px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  #addGameSection {
+    margin-bottom: 20px;
+  }
+  #gamesList {
+    list-style: none;
+    padding: 0;
+  }
+  #gamesList li {
+    background: white;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .gameName { font-weight: bold; }
+  .votersList {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+  }
+  button.voteBtn {
+    margin-left: 15px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  button.deleteBtn {
+    margin-left: 10px;
+    background: #d33;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  #clearAllBtn {
+    background: #b00;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    border-radius: 4px;
+  }
+  #welcomeMsg {
+    margin-bottom: 15px;
+  }
+</style>
+</head>
+<body>
+  <div id="loginScreen">
+    <h1>Iniciar Sesión</h1>
+    <input type="text" id="usernameInput" placeholder="Tu nombre de usuario" />
+    <br />
+    <button id="loginBtn">Entrar</button>
+    <p id="loginError" style="color:red;"></p>
+  </div>
+
+  <div id="container" style="display:none;">
+    <div id="sidebar">
+      <h2>Usuarios en línea</h2>
+      <ul id="usersOnline"></ul>
+    </div>
+    <div id="main">
+      <div id="welcomeMsg"></div>
+      <div id="addGameSection">
+        <input type="text" id="newGameInput" placeholder="Agregar juego nuevo" />
+        <button id="addGameBtn">Agregar</button>
+      </div>
+      <button id="clearAllBtn" style="display:none;">Borrar toda la lista</button>
+      <ul id="gamesList"></ul>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    const loginScreen = document.getElementById("loginScreen");
+    const container = document.getElementById("container");
+    const usernameInput = document.getElementById("usernameInput");
+    const loginBtn = document.getElementById("loginBtn");
+    const loginError = document.getElementById("loginError");
+
+    const usersOnlineList = document.getElementById("usersOnline");
+    const welcomeMsg = document.getElementById("welcomeMsg");
+    const newGameInput = document.getElementById("newGameInput");
+    const addGameBtn = document.getElementById("addGameBtn");
+    const gamesList = document.getElementById("gamesList");
+    const clearAllBtn = document.getElementById("clearAllBtn");
+
+    let currentUser = null;
+
+    loginBtn.onclick = () => {
+      const username = usernameInput.value.trim();
+      if (!username) {
+        loginError.textContent = "Por favor, ingresa un nombre de usuario";
+        return;
+      }
+      socket.emit("login", username);
+    };
+
+    socket.on("login_error", (msg) => {
+      loginError.textContent = msg;
+    });
+
+    socket.on("login_ok", (data) => {
+      currentUser = data.username;
+      loginScreen.style.display = "none";
+      container.style.display = "flex";
+      welcomeMsg.textContent = `¡Bienvenido, ${currentUser}!`;
+      updateUsersOnline(data.usersOnline);
+      updateGamesList(data.games);
+      updateAdminControls();
+    });
+
+    socket.on("users_update", (users) => {
+      updateUsersOnline(users);
+    });
+
+    socket.on("games_update", (games) => {
+      updateGamesList(games);
+    });
+
+    addGameBtn.onclick = () => {
+      const gameName = newGameInput.value.trim();
+      if (!gameName) return;
+      socket.emit("add_game", gameName);
+      newGameInput.value = "";
+    };
+
+    clearAllBtn.onclick = () => {
+      if (confirm("¿Seguro que quieres borrar toda la lista de juegos?")) {
+        socket.emit("clear_games");
+      }
+    };
+
+    function updateUsersOnline(users) {
+      usersOnlineList.innerHTML = "";
+      users.forEach(u => {
+        const li = document.createElement("li");
+        li.textContent = u;
+        if (u === currentUser) {
+          li.style.fontWeight = "bold";
+        }
+        usersOnlineList.appendChild(li);
+      });
+    }
+
+    function updateGamesList(games) {
+      gamesList.innerHTML = "";
+
+      games.forEach(game => {
+        const li = document.createElement("li");
+
+        const divInfo = document.createElement("div");
+        divInfo.style.flex = "1";
+
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = game.name;
+        nameSpan.className = "gameName";
+        divInfo.appendChild(nameSpan);
+
+        if (game.voters.length > 0) {
+          const votersDiv = document.createElement("div");
+          votersDiv.className = "votersList";
+          votersDiv.textContent = "Votado por: " + game.voters.join(", ");
+          divInfo.appendChild(votersDiv);
+        }
+
+        li.appendChild(divInfo);
+
+        const voteBtn = document.createElement("button");
+        voteBtn.className = "voteBtn";
+
+        if (game.voters.includes(currentUser)) {
+          voteBtn.textContent = "Quitar voto";
+          voteBtn.style.backgroundColor = "#f55";
+          voteBtn.style.color = "white";
+        } else {
+          voteBtn.textContent = "Votar";
+          voteBtn.style.backgroundColor = "#5a5";
+          voteBtn.style.color = "white";
+        }
+
+        voteBtn.onclick = () => {
+          socket.emit("vote_game", game.id);
+        };
+
+        li.appendChild(voteBtn);
+
+        if (currentUser === "IronFly222") {
+          const delBtn = document.createElement("button");
+          delBtn.textContent = "Borrar";
+          delBtn.className = "deleteBtn";
+          delBtn.onclick = () => {
+            if (confirm(`¿Borrar juego "${game.name}"?`)) {
+              socket.emit("delete_game", game.id);
+            }
+          };
+          li.appendChild(delBtn);
+        }
+
+        gamesList.appendChild(li);
+      });
+    }
+
+    function updateAdminControls() {
+      if (currentUser === "IronFly222") {
+        clearAllBtn.style.display = "inline-block";
+      } else {
+        clearAllBtn.style.display = "none";
+      }
+    }
+  </script>
+</body>
+</html>
